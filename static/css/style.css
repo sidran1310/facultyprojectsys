@@ -1,0 +1,77 @@
+/* Ensure footer is pushed to bottom */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto; /* Allow main content to grow and shrink */
+    padding-bottom: 2rem; /* Add padding below main content */
+}
+
+.footer {
+    flex-shrink: 0; /* Prevent footer from shrinking */
+    /* background-color: #f8f9fa; /* Light background for footer */
+}
+
+/* Improve card text consistency */
+.card-text {
+    /* min-height: 60px; /* Adjust as needed */
+    font-size: 0.9rem; /* Slightly smaller text in cards */
+}
+
+/* Improve form feedback display */
+.invalid-feedback.d-block {
+    display: block !important; /* Ensure errors show */
+}
+.form-control.is-invalid {
+    border-color: #dc3545; /* Bootstrap danger color */
+}
+
+/* Style required fields in forms (Optional: using CSS class or ::after) */
+label.required::after {
+    content: " *";
+    color: #dc3545; /* Red asterisk */
+    font-weight: bold;
+}
+
+/* Filter Form adjustments */
+.filter-form .form-label {
+    margin-bottom: 0.2rem;
+    font-size: 0.85em;
+}
+
+/* Table header style */
+.table th {
+    vertical-align: middle;
+}
+.table td {
+    vertical-align: middle;
+}
+
+/* Ensure modals are scrollable if content is too long */
+.modal-dialog-scrollable .modal-body {
+    overflow-y: auto;
+}
+
+/* Add some hover effects */
+.card:hover {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.10)!important;
+    transition: box-shadow 0.2s ease-in-out;
+}
+.btn:hover {
+     transform: translateY(-1px);
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+     transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.navbar {
+    margin-top: 0 !important;
+    background-color: #e31138 !important;
+}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'project_list' %}">Projects</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ project.title|truncatechars:50 }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h3 class="mb-0">{{ project.title }}</h3>
+            </div>
+            <div class="card-body">
+                <h4><i class="fas fa-info-circle text-primary me-2"></i>Project Description</h4>
+                <p>{{ project.description|linebreaks }}</p>
+            </div>
+             <div class="card-footer text-muted small">
+                 Posted on: {{ project.created_at|date:"F d, Y" }}
+                 {% if project.updated_at != project.created_at %}
+                     | Last updated: {{ project.updated_at|date:"F d, Y" }}
+                 {% endif %}
+             </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm sticky-lg-top" style="top: 80px;"> <!-- Sticky sidebar on larger screens -->
+            <div class="card-header bg-secondary text-white">
+                 <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Project Details</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><strong><i class="fas fa-user-tie me-2 text-muted"></i>Professor:</strong> {{ project.professorname }}</li>
+                    <li class="mb-2"><strong><i class="fas fa-check-circle me-2 text-muted"></i>Status:</strong>
+                            <span class="badge
+                            {% if project.status == 'Open' %}bg-success
+                            {% elif project.status == 'Closed' %}bg-danger
+                            {% else %}bg-warning text-dark{% endif %}">
+                            {{ project.status }}
+                            </span>
+                    </li>
+                    <li class="mb-2"><strong><i class="fas fa-tag me-2 text-muted"></i>Category:</strong> {{ project.get_category_display }}</li>
+                    <li class="mb-2"><strong><i class="fas fa-university me-2 text-muted"></i>Branch:</strong> {{ project.get_branch_display }}</li>
+                </ul>
+
+                <hr>
+
+                 <div class="d-grid gap-2">
+                    {% if user.is_authenticated %}
+                        {% if user.usertype == 'student' %}
+                            {% if project.status == 'Open' %}
+                                {% if has_applied %}
+                                    <div class="alert alert-info mb-0" role="alert">
+                                        You have applied. Status:
+                                        <span class="fw-bold
+                                            {% if application_status == 'Approved' %}text-success
+                                            {% elif application_status == 'Denied' %}text-danger
+                                            {% else %}text-warning{% endif %}">
+                                            {{ application_status }}
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <a href="{% url 'apply_project' project.id %}" class="btn btn-primary"><i class="fas fa-paper-plane me-2"></i>Apply Now</a>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn btn-secondary" disabled><i class="fas fa-times-circle me-2"></i>Applications Closed</button>
+                            {% endif %}
+                        {% elif user.usertype == 'professor' and user == project.professorid %}
+                            <a href="{% url 'edit_project' project.id %}" class="btn btn-secondary"><i class="fas fa-edit me-2"></i>Edit Project</a>
+                            <a href="{% url 'view_project_applications' project.id %}" class="btn btn-info"><i class="fas fa-users me-2"></i>View Applications</a>
+                            <a href="{% url 'delete_project_confirm' project.id %}" class="btn btn-danger"><i class="fas fa-trash-alt me-2"></i>Delete Project</a>
+                        {% else %}
+                            <!-- Professor viewing project not their own / Other user types -->
+                             <span class="text-muted fst-italic">Details shown. Log in as a student to apply.</span>
+                        {% endif %}
+                    {% else %}
+                         {% if project.status == 'Open' %}
+                            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary"><i class="fas fa-sign-in-alt me-2"></i>Login to Apply</a>
+                         {% else %}
+                             <button class="btn btn-secondary" disabled><i class="fas fa-times-circle me-2"></i>Applications Closed</button>
+                         {% endif %}
+                    {% endif %}
+                 </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

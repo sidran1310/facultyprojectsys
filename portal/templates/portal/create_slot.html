@@ -1,0 +1,14 @@
+{% extends 'portal/base.html' %}
+{% block content %}
+<h2>Create Slot</h2>
+<form method="POST">
+  {% csrf_token %}
+  <label>Date:</label>
+  <input type="date" name="date" value="{{ request.GET.date }}" required><br>
+  <label>Start Time:</label>
+  <input type="time" name="start_time" required><br>
+  <label>End Time:</label>
+  <input type="time" name="end_time" required><br>
+  <button type="submit">Create Slot</button>
+</form>
+{% endblock %}

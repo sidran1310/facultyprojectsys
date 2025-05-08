@@ -1,0 +1,18 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="login-container d-flex flex-wrap">
+    <div class="login-form p-5" style="flex: 1; max-width: 600px;">
+        <h2 class="login-title text-danger mb-4">Sign Up</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-danger">Sign Up</button>
+        </form>
+        <p class="mt-3">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+    <div class="login-image" style="flex: 1; background: url('{% static 'img/login/building.png' %}') no-repeat center center; background-size: cover; min-height: 100vh;"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,1 @@
+# Standard ASGI content (usually pre-generated)

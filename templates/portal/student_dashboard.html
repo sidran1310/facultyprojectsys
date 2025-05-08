@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Student Dashboard</h2>
+<p class="lead">Welcome, {{ user.name }}!</p>
+
+<div class="row g-4">
+    <!-- Quick Actions -->
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white"><i class="fas fa-bolt me-2"></i>Quick Actions</div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'project_list' %}" class="btn btn-primary"><i class="fas fa-search me-2"></i>Browse Projects</a>
+                    <a href="{% url 'application_history' %}" class="btn btn-secondary"><i class="fas fa-history me-2"></i>View My Applications</a>
+                    <a href="{% url 'profile_view' %}" class="btn btn-info"><i class="fas fa-user-edit me-2"></i>View/Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Applications -->
+    <div class="col-md-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light"><i class="fas fa-file-alt me-2"></i>Recent Applications</div>
+            <div class="card-body">
+                {% if recent_applications %}
+                    <ul class="list-group list-group-flush">
+                        {% for app in recent_applications %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{% url 'project_detail' app.projectid.id %}" class="fw-bold text-decoration-none">{{ app.projectid.title }}</a>
+                                    <small class="d-block text-muted">Applied: {{ app.applicationdate|date:"M d, Y" }}</small>
+                                </div>
+                                <span class="badge rounded-pill
+                                    {% if app.status == 'Approved' %}bg-success
+                                    {% elif app.status == 'Denied' %}bg-danger
+                                    {% else %}bg-warning text-dark{% endif %}">
+                                    {{ app.status }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                        <div class="text-end mt-2">
+                             <a href="{% url 'application_history' %}" class="btn btn-sm btn-outline-primary">View All Applications</a>
+                        </div>
+                {% else %}
+                    <p class="text-muted fst-italic">You haven't applied for any projects yet.</p>
+                    <div class="text-center">
+                         <a href="{% url 'project_list' %}" class="btn btn-sm btn-success">Find Projects</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+     <!-- Stats/Info (Example) -->
+    <div class="col-12">
+         <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            There are currently <strong>{{ open_projects_count }}</strong> open project(s) available. Keep an eye out for new opportunities!
+        </div>
+    </div>
+
+</div>
+{% endblock %}

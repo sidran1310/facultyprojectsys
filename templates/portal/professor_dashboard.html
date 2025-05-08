@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Professor Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Professor Dashboard</h2>
+<p class="lead">Welcome, Professor {{ user.name }}!</p>
+
+<div class="row g-4 mb-4">
+     <div class="col-md-6">
+         <div class="card text-center shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Your Projects</h5>
+                <p class="display-4">{{ projects|length }}</p>
+                 <a href="{% url 'add_project' %}" class="btn btn-success mt-2"><i class="fas fa-plus-circle me-1"></i> Add New Project</a>
+             </div>
+         </div>
+     </div>
+      <div class="col-md-6">
+         <div class="card text-center shadow-sm h-100">
+             <div class="card-body">
+                 <h5 class="card-title">Pending Applications</h5>
+                 <p class="display-4">{{ total_pending }}</p>
+                 {% if total_pending > 0 %}
+                    <a href="#project-list" class="btn btn-warning mt-2"><i class="fas fa-inbox me-1"></i> Review Applications</a>
+                 {% else %}
+                    <span class="text-muted mt-2 d-block">No pending applications</span>
+                 {% endif %}
+             </div>
+         </div>
+     </div>
+</div>
+
+
+<div class="d-flex justify-content-between align-items-center mb-3" id="project-list">
+    <h3>Your Projects</h3>
+</div>
+
+{% if projects %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Category</th>
+                    <th>Branch</th>
+                    <th>Pending Apps</th>
+                    <th>Approved Apps</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td><a href="{% url 'project_detail' project.id %}" title="View Project Details">{{ project.title }}</a></td>
+                    <td>
+                        <span class="badge {% if project.status == 'Open' %}bg-success{% elif project.status == 'Closed' %}bg-danger{% else %}bg-secondary{% endif %}">{{ project.status }}</span>
+                    </td>
+                    <td>{{ project.get_category_display }}</td>
+                    <td>{{ project.get_branch_display }}</td>
+                    <td class="text-center">
+                        {% if project.pending_applications_count > 0 %}
+                                <span class="badge bg-warning text-dark rounded-pill" title="{{ project.pending_applications_count }} pending">{{ project.pending_applications_count }}</span>
+                        {% else %}
+                                <span class="badge bg-light text-muted rounded-pill">0</span>
+                        {% endif %}
+                    </td>
+                     <td class="text-center">
+                         <span class="badge bg-info rounded-pill">{{ project.approved_applications_count }}</span>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Project Actions">
+                            <a href="{% url 'view_project_applications' project.id %}" class="btn btn-primary" title="View Applications"><i class="fas fa-users"></i> Apps</a>
+                            <a href="{% url 'edit_project' project.id %}" class="btn btn-secondary" title="Edit Project"><i class="fas fa-edit"></i> Edit</a>
+                            <a href="{% url 'delete_project_confirm' project.id %}" class="btn btn-danger" title="Delete Project"><i class="fas fa-trash-alt"></i> Del</a>
+                        </div>
+                         <!-- Alternative using POST form for delete immediately (less safe without confirmation page)
+                         <form action="{% url 'delete_project' project.id %}" method="POST" class="d-inline ms-1" onsubmit="return confirm('Are you sure you want to delete \'{{ project.title }}\' and all related applications? This cannot be undone.');">
+                             {% csrf_token %}
+                             <button type="submit" class="btn btn-sm btn-danger" title="Delete Project"><i class="fas fa-trash-alt"></i></button>
+                         </form>
+                         -->
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info text-center">
+        You have not created any projects yet. <a href="{% url 'add_project' %}" class="alert-link">Add one now</a>.
+    </div>
+{% endif %}
+
+<hr class="my-4">
+<a href="{% url 'profile_view' %}" class="btn btn-outline-info"><i class="fas fa-user-cog me-2"></i>View/Edit Your Profile</a>
+
+{% endblock %}

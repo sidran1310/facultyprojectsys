@@ -1,0 +1,44 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+{% block content %}
+<h2>Interactive Calendar</h2>
+
+<!-- FullCalendar CDN -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<div id="calendar"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      selectable: true,
+      height: 'auto',
+
+      dateClick: function (info) {
+        const userType = "{{ user.usertype }}";
+        if (userType === "professor") {
+          window.location.href = `/calendar/create-slot/?date=${info.dateStr}`;
+        }
+      },
+
+      eventClick: function (info) {
+        const userType = "{{ user.usertype }}";
+        const slotId = info.event.id;
+        if (userType === "student") {
+          if (confirm("Book this slot?")) {
+            window.location.href = `/calendar/book-slot/${slotId}/`;
+          }
+        }
+      },
+
+      events: {{ event_json|safe }}
+    });
+
+    calendar.render();
+  });
+</script>
+{% endblock %}

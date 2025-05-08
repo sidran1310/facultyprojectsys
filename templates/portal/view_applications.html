@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Applications for {{ project.title }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'professor_dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Applications for {{ project.title|truncatechars:50 }}</li>
+    </ol>
+</nav>
+
+<h2>Applications for: {{ project.title }}</h2>
+<hr>
+
+{% if applications %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Branch</th>
+                <th>Applied On</th>
+                <th class="text-center">Details</th>
+                <th class="text-center">Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.studentid.name }}</td>
+                <td>{{ app.studentid.email }}</td>
+                <td>{{ app.studentid.profile.branch|default:"N/A" }}</td>
+                <td>{{ app.applicationdate|date:"M d, Y H:i" }}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#statementModal{{ app.id }}" title="View Statement and Details">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="statementModal{{ app.id }}" tabindex="-1" aria-labelledby="statementModalLabel{{ app.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="statementModalLabel{{ app.id }}">Application Details: {{ app.studentid.name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h6 class="text-primary">Statement of Interest</h6>
+                                <p>{{ app.statementofinterest|linebreaks }}</p>
+                                <hr>
+                            
+                                <h6 class="text-primary">Academic Details</h6>
+                                <p>{{ app.studentid.profile.academicdetails|linebreaks|default:"Not provided" }}</p>
+                                <hr>
+                            
+                                <h6 class="text-primary">Contact</h6>
+                                <p>Email: {{ app.studentid.email }}</p>
+                                <p>Branch: {{ app.studentid.profile.branch|default:"N/A" }}</p>
+                                <hr>
+                                <h6 class="text-primary">Resume</h6>
+                                {% if app.resume %}
+                                    <a href="{{ app.resume.url }}" class="btn btn-primary" download>
+                                        <i class="fas fa-download me-1"></i> Download Resume
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-outline-secondary" disabled>No resume uploaded</button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <span class="badge rounded-pill
+                        {% if app.status == 'Approved' %}bg-success
+                        {% elif app.status == 'Denied' %}bg-danger
+                        {% else %}bg-warning text-dark{% endif %}">
+                        {{ app.status }}
+                    </span>
+                </td>
+                <td>
+                     <div class="btn-group btn-group-sm" role="group">
+                        {% if app.status == 'Pending' or app.status == 'Denied' %}
+                            <a href="{% url 'update_application_status' app.id 'Approved' %}" class="btn btn-success" title="Approve"><i class="fas fa-check"></i></a>
+                        {% endif %}
+                         {% if app.status == 'Pending' or app.status == 'Approved' %}
+                            <a href="{% url 'update_application_status' app.id 'Denied' %}" class="btn btn-danger" title="Deny"><i class="fas fa-times"></i></a>
+                         {% endif %}
+                         {% if app.status != 'Pending' %}
+                            <a href="{% url 'update_application_status' app.id 'Pending' %}" class="btn btn-secondary" title="Set to Pending"><i class="fas fa-undo"></i></a>
+                         {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+    <div class="alert alert-info text-center">
+        <i class="fas fa-inbox me-2"></i>No applications received for this project yet.
+    </div>
+{% endif %}
+
+<a href="{% url 'professor_dashboard' %}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left me-1"></i>Back to Dashboard</a>
+
+{% endblock %}

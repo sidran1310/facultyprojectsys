@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<style>
+    .login-container {
+        display: flex;
+        flex-wrap: wrap;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+    }
+    .login-form {
+        flex: 1;
+        padding: 4rem;
+        max-width: 600px;
+    }
+    .login-image {
+        flex: 1;
+        background: url('{% static "img/login/building.png" %}') no-repeat center center;
+        background-size: contain;
+        min-height: 300px;
+    }
+    .login-form img.icon {
+        width: 24px;
+        margin-right: 8px;
+    }
+    .login-title {
+        color: #e31138;
+        font-weight: bold;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-form d-flex flex-column justify-content-center">
+        <div class="text-center mb-4">
+            <img src="{% static 'img/login/user_icon.png' %}" width="60" class="mb-3" />
+            <h2 class="login-title">Login</h2>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Email ID</label>
+                <div class="input-group">
+                    <span class="input-group-text"><img src="{% static 'img/login/email.png' %}" class="icon"></span>
+                    {{ form.username }}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><img src="{% static 'img/login/lock.png' %}" class="icon"></span>
+                    {{ form.password }}
+                </div>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Remember me</label>
+                <a href="#" class="float-end text-danger text-decoration-none">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn btn-danger w-100">Sign in</button>
+        </form>
+    </div>
+    <div class="login-image"></div>
+</div>
+{% endblock %}

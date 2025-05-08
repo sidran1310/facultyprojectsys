@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'professor_dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Confirm Delete</li>
+    </ol>
+</nav>
+
+<h2>Confirm Project Deletion</h2>
+<hr>
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Warning!</h4>
+    <p>You are about to permanently delete the project: <strong>"{{ project.title }}"</strong>.</p>
+    <p>This action will also delete <strong>{{ application_count }}</strong> associated student application(s).</p>
+    <hr>
+    <p class="mb-0"><strong>This action cannot be undone.</strong> Are you sure you want to proceed?</p>
+</div>
+
+<form method="post" action="{% url 'delete_project' project.id %}">
+    {% csrf_token %}
+    <a href="{% url 'professor_dashboard' %}" class="btn btn-secondary"><i class="fas fa-times me-1"></i>Cancel</a>
+    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt me-1"></i>Yes, Delete Project</button>
+</form>
+
+{% endblock %}

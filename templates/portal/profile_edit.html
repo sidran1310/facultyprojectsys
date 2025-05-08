@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard_redirect' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'profile_view' %}">Profile</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+    </ol>
+</nav>
+
+<h2>Edit Profile</h2>
+<hr>
+<div class="card shadow-sm">
+        <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if user_form.non_field_errors or profile_form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in user_form.non_field_errors %}{{ error }}{% endfor %}
+                    {% for error in profile_form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+
+            <h4 class="mb-3 text-primary">Account Details</h4>
+                {% for field in user_form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in field.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <hr class="my-4">
+            <h4 class="mb-3 text-primary">
+                {% if user_type == 'student' %}Academic{% else %}Faculty{% endif %} Details
+            </h4>
+                {% for field in profile_form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in field.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a href="{% url 'profile_view' %}" class="btn btn-secondary me-md-2"><i class="fas fa-times me-1"></i>Cancel</a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Changes</button>
+            </div>
+        </form>
+        </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Add 'is-invalid' class to form fields with errors after page load
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.invalid-feedback.d-block').forEach(function(errorDiv) {
+            let input = errorDiv.previousElementSibling;
+            // Check sibling inputs or inputs inside wrapper divs if needed
+            if (input && (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA' || input.tagName === 'SELECT')) {
+                input.classList.add('is-invalid');
+            }
+        });
+         // Autofocus on the first field with an error
+        let firstError = document.querySelector('.is-invalid');
+        if (firstError) {
+            firstError.focus();
+        }
+    });
+</script>
+{% endblock %}

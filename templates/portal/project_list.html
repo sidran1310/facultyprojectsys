@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Available Projects{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Projects</h2>
+
+<!-- Filter Form -->
+<form method="get" class="mb-4 p-3 border rounded bg-light shadow-sm">
+    <div class="row g-2 align-items-end">
+        <div class="col-lg-3 col-md-6">
+            <label for="query" class="form-label fw-bold small">Search Title</label>
+            <input type="text" name="query" id="query" class="form-control form-control-sm" value="{{ current_filters.query|default:'' }}" placeholder="Enter keywords...">
+        </div>
+        <div class="col-lg-2 col-md-6">
+            <label for="professorname" class="form-label fw-bold small">Professor</label>
+            <select name="professorname" id="professorname" class="form-select form-select-sm">
+                <option value="">Any</option>
+                {% for prof in professors %}
+                    <option value="{{ prof }}" {% if current_filters.professorname == prof %}selected{% endif %}>{{ prof }}</option>
+                {% endfor %}
+            </select>
+        </div>
+            <div class="col-lg-2 col-md-4">
+            <label for="category" class="form-label fw-bold small">Category</label>
+            <select name="category" id="category" class="form-select form-select-sm">
+                <option value="">Any</option>
+                {% for value, display in categories %}
+                    <option value="{{ value }}" {% if current_filters.category == value %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+            <div class="col-lg-2 col-md-4">
+            <label for="branch" class="form-label fw-bold small">Branch</label>
+            <select name="branch" id="branch" class="form-select form-select-sm">
+                <option value="">Any</option>
+                    {% for value, display in branches %}
+                    <option value="{{ value }}" {% if current_filters.branch == value %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-4">
+                <label for="status" class="form-label fw-bold small">Status</label>
+            <select name="status" id="status" class="form-select form-select-sm">
+                 <option value="">
+                    {% if user.is_authenticated and user.usertype == 'professor' %}
+                        Any Status
+                    {% else %}
+                        Any (Default Open)
+                    {% endif %}
+                 </option>
+                 {% for value, display in statuses %}
+                    <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-1 col-md-12 d-grid">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter me-1"></i>Filter</button>
+        </div>
+    </div>
+</form>
+
+
+{% if projects %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for project in projects %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                 <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="badge {% if project.status == 'Open' %}bg-success{% elif project.status == 'Closed' %}bg-danger{% else %}bg-secondary{% endif %}">{{ project.status }}</span>
+                    <small class="text-muted">Prof. {{ project.professorname }}</small>
+                 </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text flex-grow-1 text-muted small">{{ project.description|truncatewords:30 }}</p>
+                    <div>
+                        <span class="badge bg-info me-1"><i class="fas fa-tag me-1"></i>{{ project.get_category_display }}</span>
+                        <span class="badge bg-secondary me-1"><i class="fas fa-university me-1"></i>{{ project.get_branch_display }}</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-end">
+                    <a href="{% url 'project_detail' project.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+     <div class="alert alert-warning text-center" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>No projects found matching your criteria. Try adjusting the filters.
+    </div>
+{% endif %}
+
+{% endblock %}
